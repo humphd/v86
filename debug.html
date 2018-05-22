@@ -7,7 +7,7 @@
 <script src="loader.js"></script>
 <link rel="stylesheet" href="v86.css">
 
-<div>
+<div hidden>
     <div id="boot_options">
         <h4>Debugger</h4>
         <input type="button" value="ReactOS" id="start_reactos">
@@ -191,7 +191,7 @@
     </div>
 </div>
 
-<div id="runtime_infos" style="display: none">
+<div id="runtime_infos" style="display: none" hidden>
     Running: <span id="running_time">0s</span> <br>
     Speed: <span id="speed">0</span>kIPS<br>
     Avg speed: <span id="avg_speed">0</span>kIPS<br>
@@ -228,7 +228,7 @@
     <!-- Keyboard: <span id="info_keyboard_enabled">-</span><br> -->
 </div>
 
-<div id="filesystem_panel" style="display: none">
+<div id="filesystem_panel" style="display: none" hidden>
     <label>
         Send files to emulator<br>
         <input type="file" id="filesystem_send_file" multiple>
@@ -240,12 +240,12 @@
     </label>
 </div>
 
-<div id="debug_panel" style="display: none">
+<div id="debug_panel" style="display: none" hidden>
 </div>
 
 <br style="clear:both"><br>
 
-<textarea readonly id="log" style="display:none"></textarea>
+<textarea readonly id="log" style="display:none" hidden></textarea>
 
-<textarea spellcheck="false" cols="40" rows="12" id="serial" style="display:none">
+<textarea spellcheck="false" cols="40" rows="12" id="serial" style="display:none" hidden>
 </textarea>

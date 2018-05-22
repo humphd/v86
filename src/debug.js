@@ -28,7 +28,7 @@ CPU.prototype.debug_init = function()
             if(el)
             {
                 el.textContent += x + "\n";
-                el.style.display = "block";
+//                el.style.display = "block";
                 el.scrollTop = 1e9;
                 return;
             }

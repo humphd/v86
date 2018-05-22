@@ -15,7 +15,7 @@
     var LIB_FILES = "";
 
     // jor1k stuff
-    LIB_FILES += " jor1k.js 9p.js filesystem.js marshall.js utf8.js";
+    LIB_FILES += " jor1k.js filer.js 9p-filer.js filesystem.js marshall.js utf8.js";
 
     var to_load = [];
 

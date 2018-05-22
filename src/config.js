@@ -24,9 +24,12 @@ var LOG_ALL_IO = false;
  */
 var LOG_PAGE_FAULTS = false;
 
-
+/**
+ * XXXhumphd: I only care about 9P logs for now...
 var LOG_LEVEL = LOG_ALL & ~LOG_PS2 & ~LOG_PIT & ~LOG_VIRTIO & ~LOG_9P & ~LOG_PIC &
                           ~LOG_DMA & ~LOG_SERIAL & ~LOG_NET & ~LOG_FLOPPY & ~LOG_DISK;
+ */
+var LOG_LEVEL = LOG_ALL & LOG_9P;
 
 /**
  * @const
