@@ -259,6 +259,8 @@
                     "size": 8624128,
                 },
                 name: "Linux",
+                memory_size: 32 * 1024 * 1024,
+                vga_memory_size: 4 * 1024 * 1024,
                 filesystem: {},
             },
             {
@@ -504,7 +506,7 @@
 
             if(!DEBUG && infos.description)
             {
-                $("description").style.display = "block";
+//                $("description").style.display = "block";
                 $("description").innerHTML = "<br>" + infos.description;
             }
 
@@ -736,7 +738,7 @@
         emulator.add_listener("download-error", function(e)
         {
             var el = $("loading");
-            el.style.display = "block";
+//            el.style.display = "block";
             el.textContent = "Loading " + e.file_name + " failed. Check your connection " +
                              "and reload the page to try again.";
         });
@@ -750,8 +752,8 @@
     {
         $("boot_options").style.display = "none";
         $("loading").style.display = "none";
-        $("runtime_options").style.display = "block";
-        $("runtime_infos").style.display = "block";
+//        $("runtime_options").style.display = "block";
+//        $("runtime_infos").style.display = "block";
         $("screen_container").style.display = "block";
 
         if(settings.filesystem)
@@ -847,7 +849,7 @@
 
         emulator.add_listener("9p-read-start", function()
         {
-            $("info_filesystem").style.display = "block";
+//            $("info_filesystem").style.display = "block";
             $("info_filesystem_status").textContent = "Loading ...";
         });
         emulator.add_listener("9p-read-end", function(args)
@@ -875,7 +877,7 @@
 
         emulator.add_listener("ide-read-start", function()
         {
-            $("info_storage").style.display = "block";
+//            $("info_storage").style.display = "block";
             $("info_storage_status").textContent = "Loading ...";
         });
         emulator.add_listener("ide-read-end", function(args)
@@ -905,14 +907,14 @@
         {
             stats_net.bytes_received += args[0];
 
-            $("info_network").style.display = "block";
+//            $("info_network").style.display = "block";
             $("info_network_bytes_received").textContent = stats_net.bytes_received;
         });
         emulator.add_listener("eth-transmit-end", function(args)
         {
             stats_net.bytes_transmitted += args[0];
 
-            $("info_network").style.display = "block";
+//            $("info_network").style.display = "block";
             $("info_network_bytes_transmitted").textContent = stats_net.bytes_transmitted;
         });
 
@@ -1181,7 +1183,7 @@
             $("take_screenshot").blur();
         };
 
-        $("serial").style.display = "block";
+//        $("serial").style.display = "block";
 
         window.addEventListener("keydown", ctrl_w_rescue, false);
         window.addEventListener("keyup", ctrl_w_rescue, false);
@@ -1206,7 +1208,7 @@
 
     function init_filesystem_panel(emulator)
     {
-        $("filesystem_panel").style.display = "block";
+ //       $("filesystem_panel").style.display = "block";
 
         $("filesystem_send_file").onchange = function()
         {
@@ -1295,7 +1297,7 @@
 
         var cpu = emulator.v86.cpu;
 
-        $("debug_panel").style.display = "block";
+//        $("debug_panel").style.display = "block";
         setInterval(function()
         {
             $("debug_panel").textContent =
