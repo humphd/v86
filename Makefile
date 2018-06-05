@@ -49,7 +49,7 @@ CORE_FILES=const.js config.js io.js main.js lib.js fpu.js ide.js pci.js floppy.j
 	   state.js ne2k.js sb16.js virtio.js bus.js log.js \
 	   cpu.js translate.js modrm.js string.js arith.js misc_instr.js instructions.js debug.js \
 	   elf.js
-LIB_FILES=9p-filer.js filesystem.js jor1k.js marshall.js utf8.js
+LIB_FILES=9p-filer.js filesystem-filer.js jor1k.js marshall.js utf8.js
 BROWSER_FILES=screen.js \
 	      keyboard.js mouse.js speaker.js serial.js \
 	      network.js lib.js starter.js worker_bus.js dummy_screen.js
