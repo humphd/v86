@@ -1,6 +1,6 @@
 {
-  "name": "v86",
   "license": "BSD-2-Clause",
-  "version": "1.0.1",
-  "main": "build/libv86.js"
+  "main": "build/libv86.js",
+  "name": "v86",
+  "version": "1.0.1"
 }
