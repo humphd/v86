@@ -30,8 +30,7 @@
  * - `initial_state Object` (Normal boot) - An initial state to load, see
  *   [`restore_state`](#restore_statearraybuffer-state) and below.
  *
- * - `filesystem Object` (No 9p filesystem) - A 9p filesystem, see
- *   [filesystem.md](filesystem.md).
+ * - `filesystem Object` (No 9p filesystem) - A Filer fs object.
  *
  * - `serial_container HTMLTextAreaElement` (No serial terminal) - A textarea
  *   that will receive and send data to the emulated serial terminal.
@@ -117,7 +116,7 @@ function V86Starter(options)
     settings.load_devices = true;
     settings.memory_size = options["memory_size"] || 64 * 1024 * 1024;
     settings.vga_memory_size = options["vga_memory_size"] || 8 * 1024 * 1024;
-    settings.boot_order = options["boot_order"] || 0x213;
+    settings.boot_order = options["boot_order"] || 0x213; // prefer CD-ROM
     settings.fastboot = options["fastboot"] || false;
     settings.fda = undefined;
     settings.fdb = undefined;
@@ -310,32 +309,8 @@ function V86Starter(options)
 
     if(options["filesystem"])
     {
-        var fs_url = options["filesystem"]["basefs"];
-        var base_url = options["filesystem"]["baseurl"];
-
-        this.fs9p = new FS(base_url);
-        settings.fs9p = this.fs9p;
-
-        if(fs_url)
-        {
-            console.assert(base_url, "Filesystem: baseurl must be specified");
-
-            var size;
-
-            if(typeof fs_url === "object")
-            {
-                size = fs_url["size"];
-                fs_url = fs_url["url"];
-            }
-            dbg_assert(typeof fs_url === "string");
-
-            files_to_load.push({
-                name: "fs9p_json",
-                url: fs_url,
-                size: size,
-                as_text: true,
-            });
-        }
+        // Assume a Filer fs is passed to us via filesystem
+        settings.fs9p = options["filesystem"];
     }
 
     var starter = this;
@@ -541,108 +516,6 @@ V86Starter.prototype.save_state = function(callback)
 };
 
 /**
- * Return an object with several statistics. Return value looks similar to
- * (but can be subject to change in future versions or different
- * configurations, so use defensively):
- *
- * ```javascript
- * {
- *     "cpu": {
- *         "instruction_counter": 2821610069
- *     },
- *     "hda": {
- *         "sectors_read": 95240,
- *         "sectors_written": 952,
- *         "bytes_read": 48762880,
- *         "bytes_written": 487424,
- *         "loading": false
- *     },
- *     "cdrom": {
- *         "sectors_read": 0,
- *         "sectors_written": 0,
- *         "bytes_read": 0,
- *         "bytes_written": 0,
- *         "loading": false
- *     },
- *     "mouse": {
- *         "enabled": true
- *     },
- *     "vga": {
- *         "is_graphical": true,
- *         "res_x": 800,
- *         "res_y": 600,
- *         "bpp": 32
- *     }
- * }
- * ```
- *
- * @deprecated
- * @return {Object}
- * @export
- */
-V86Starter.prototype.get_statistics = function()
-{
-    console.warn("V86Starter.prototype.get_statistics is deprecated. Use events instead.");
-
-    var stats = {
-        cpu: {
-            instruction_counter: this.get_instruction_counter(),
-        },
-    };
-
-    if(!this.v86)
-    {
-        return stats;
-    }
-
-    var devices = this.v86.cpu.devices;
-
-    if(devices.hda)
-    {
-        stats.hda = devices.hda.stats;
-    }
-
-    if(devices.cdrom)
-    {
-        stats.cdrom = devices.cdrom.stats;
-    }
-
-    if(devices.ps2)
-    {
-        stats["mouse"] = {
-            "enabled": devices.ps2.use_mouse,
-        };
-    }
-
-    if(devices.vga)
-    {
-        stats["vga"] = {
-            "is_graphical": devices.vga.stats.is_graphical,
-        };
-    }
-
-    return stats;
-};
-
-/**
- * @return {number}
- * @ignore
- * @export
- */
-V86Starter.prototype.get_instruction_counter = function()
-{
-    if(this.v86)
-    {
-        return this.v86.cpu.timestamp_counter;
-    }
-    else
-    {
-        // TODO: Should be handled using events
-        return 0;
-    }
-};
-
-/**
  * @return {boolean}
  * @export
  */
@@ -650,168 +523,6 @@ V86Starter.prototype.is_running = function()
 {
     return this.cpu_is_running;
 };
-
-/**
- * Send a sequence of scan codes to the emulated PS2 controller. A list of
- * codes can be found at http://stanislavs.org/helppc/make_codes.html.
- * Do nothing if there is no keyboard controller.
- *
- * @param {Array.<number>} codes
- * @export
- */
-V86Starter.prototype.keyboard_send_scancodes = function(codes)
-{
-    for(var i = 0; i < codes.length; i++)
-    {
-        this.bus.send("keyboard-code", codes[i]);
-    }
-};
-
-/**
- * Send translated keys
- * @ignore
- * @export
- */
-V86Starter.prototype.keyboard_send_keys = function(codes)
-{
-    for(var i = 0; i < codes.length; i++)
-    {
-        this.keyboard_adapter.simulate_press(codes[i]);
-    }
-};
-
-/**
- * Send text
- * @ignore
- * @export
- */
-V86Starter.prototype.keyboard_send_text = function(string)
-{
-    for(var i = 0; i < string.length; i++)
-    {
-        this.keyboard_adapter.simulate_char(string[i]);
-    }
-};
-
-/**
- * Download a screenshot.
- *
- * @ignore
- * @export
- */
-V86Starter.prototype.screen_make_screenshot = function()
-{
-    if(this.screen_adapter)
-    {
-        this.screen_adapter.make_screenshot();
-    }
-};
-
-/**
- * Set the scaling level of the emulated screen.
- *
- * @param {number} sx
- * @param {number} sy
- *
- * @ignore
- * @export
- */
-V86Starter.prototype.screen_set_scale = function(sx, sy)
-{
-    if(this.screen_adapter)
-    {
-        this.screen_adapter.set_scale(sx, sy);
-    }
-};
-
-/**
- * Go fullscreen.
- *
- * @ignore
- * @export
- */
-V86Starter.prototype.screen_go_fullscreen = function()
-{
-    if(!this.screen_adapter)
-    {
-        return;
-    }
-
-    var elem = document.getElementById("screen_container");
-
-    if(!elem)
-    {
-        return;
-    }
-
-    // bracket notation because otherwise they get renamed by closure compiler
-    var fn = elem["requestFullScreen"] ||
-            elem["webkitRequestFullscreen"] ||
-            elem["mozRequestFullScreen"] ||
-            elem["msRequestFullScreen"];
-
-    if(fn)
-    {
-        fn.call(elem);
-
-        // This is necessary, because otherwise chromium keyboard doesn't work anymore.
-        // Might (but doesn't seem to) break something else
-        var focus_element = document.getElementsByClassName("phone_keyboard")[0];
-        focus_element && focus_element.focus();
-    }
-
-    //this.lock_mouse(elem);
-    this.lock_mouse();
-};
-
-/**
- * Lock the mouse cursor: It becomes invisble and is not moved out of the
- * browser window.
- *
- * @ignore
- * @export
- */
-V86Starter.prototype.lock_mouse = function()
-{
-    var elem = document.body;
-
-    var fn = elem["requestPointerLock"] ||
-                elem["mozRequestPointerLock"] ||
-                elem["webkitRequestPointerLock"];
-
-    if(fn)
-    {
-        fn.call(elem);
-    }
-};
-
-/**
- * Enable or disable sending mouse events to the emulated PS2 controller.
- *
- * @param {boolean} enabled
- */
-V86Starter.prototype.mouse_set_status = function(enabled)
-{
-    if(this.mouse_adapter)
-    {
-        this.mouse_adapter.emu_enabled = enabled;
-    }
-};
-
-/**
- * Enable or disable sending keyboard events to the emulated PS2 controller.
- *
- * @param {boolean} enabled
- * @export
- */
-V86Starter.prototype.keyboard_set_status = function(enabled)
-{
-    if(this.keyboard_adapter)
-    {
-        this.keyboard_adapter.emu_enabled = enabled;
-    }
-};
-
 
 /**
  * Send a string to the first emulated serial terminal.
@@ -827,123 +538,13 @@ V86Starter.prototype.serial0_send = function(data)
     }
 };
 
-/**
- * Write to a file in the 9p filesystem. Nothing happens if no filesystem has
- * been initialized. First argument to the callback is an error object if
- * something went wrong and null otherwise.
- *
- * @param {string} file
- * @param {Uint8Array} data
- * @param {function(Object)=} callback
- * @export
- */
-V86Starter.prototype.create_file = function(file, data, callback)
-{
-    var fs = this.fs9p;
-
-    if(!fs)
-    {
-        return;
-    }
-
-    var parts = file.split("/");
-    var filename = parts[parts.length - 1];
-
-    var path_infos = fs.SearchPath(file);
-    var parent_id = path_infos.parentid;
-    var not_found = filename === "" || parent_id === -1;
-
-    if(!not_found)
-    {
-        fs.CreateBinaryFile(filename, parent_id, data);
-    }
-
-    if(callback)
-    {
-        setTimeout(function()
-        {
-            if(not_found)
-            {
-                callback(new FileNotFoundError());
-            }
-            else
-            {
-                callback(null);
-            }
-        }, 0);
-    }
-};
-
-/**
- * Read a file in the 9p filesystem. Nothing happens if no filesystem has been
- * initialized.
- *
- * @param {string} file
- * @param {function(Object, Uint8Array)} callback
- * @export
- */
-V86Starter.prototype.read_file = function(file, callback)
-{
-    var fs = this.fs9p;
-
-    if(!fs)
-    {
-        return;
-    }
-
-    var path_infos = fs.SearchPath(file);
-    var id = path_infos.id;
-
-    if(id === -1)
-    {
-        callback(new FileNotFoundError(), null);
-    }
-    else
-    {
-        fs.OpenInode(id, undefined);
-        fs.AddEvent(
-            id,
-            function()
-            {
-                var data = fs.inodedata[id];
-
-                if(data)
-                {
-                    callback(null, data.subarray(0, fs.inodes[id].size));
-                }
-                else
-                {
-                    callback(new FileNotFoundError(), null);
-                }
-            }
-        );
-    }
-};
-
-/**
- * @ignore
- * @constructor
- *
- * @param {string=} message
- */
-function FileNotFoundError(message)
-{
-    this.message = message || "File not found";
-}
-FileNotFoundError.prototype = Error.prototype;
-
-// Closure Compiler's way of exporting
-if(typeof window !== "undefined")
-{
-    window["V86Starter"] = V86Starter;
-    window["V86"] = V86Starter;
-}
-else if(typeof module !== "undefined" && typeof module.exports !== "undefined")
+// Closure Compiler's way of exporting.  Prefer module export over global
+if(typeof module !== "undefined" && typeof module.exports !== "undefined")
 {
     module.exports["V86Starter"] = V86Starter;
     module.exports["V86"] = V86Starter;
 }
-else if(typeof importScripts === "function")
+else // window or worker, put it on the global
 {
     // web worker
     self["V86Starter"] = V86Starter;

@@ -35,6 +35,38 @@ CLOSURE_FLAGS=\
 	    --js lib/closure-base.js\
 		--generate_exports\
 		--externs src/externs.js\
+		--warning_level VERBOSE\
+		--jscomp_error accessControls\
+		--jscomp_error ambiguousFunctionDecl\
+		--jscomp_error checkEventfulObjectDisposal\
+		--jscomp_error checkRegExp\
+		--jscomp_error checkTypes\
+		--jscomp_error checkVars\
+		--jscomp_error conformanceViolations\
+		--jscomp_error const\
+		--jscomp_error constantProperty\
+		--jscomp_error deprecated\
+		--jscomp_error deprecatedAnnotations\
+		--jscomp_error duplicateMessage\
+		--jscomp_error es3\
+		--jscomp_error es5Strict\
+		--jscomp_error externsValidation\
+		--jscomp_error fileoverviewTags\
+		--jscomp_error globalThis\
+		--jscomp_error internetExplorerChecks\
+		--jscomp_error invalidCasts\
+		--jscomp_error misplacedTypeAnnotation\
+		--jscomp_error missingGetCssName\
+		--jscomp_error missingReturn\
+		--jscomp_error msgDescriptions\
+		--jscomp_error nonStandardJsDocs\
+		--jscomp_error suspiciousCode\
+		--jscomp_error strictModuleDepCheck\
+		--jscomp_error typeInvalidation\
+		--jscomp_error undefinedNames\
+		--jscomp_error undefinedVars\
+		--jscomp_error unknownDefines\
+		--jscomp_error visibility\
 		--use_types_for_optimization\
 		--summary_detail_level 3\
 		--language_in ECMASCRIPT5_STRICT
@@ -49,7 +81,7 @@ CORE_FILES=const.js config.js io.js main.js lib.js fpu.js ide.js pci.js floppy.j
 	   state.js ne2k.js sb16.js virtio.js bus.js log.js \
 	   cpu.js translate.js modrm.js string.js arith.js misc_instr.js instructions.js debug.js \
 	   elf.js
-LIB_FILES=9p-filer.js filesystem-filer.js jor1k.js marshall.js utf8.js
+LIB_FILES=9p-filer.js jor1k.js marshall.js utf8.js
 BROWSER_FILES=screen.js \
 	      keyboard.js mouse.js speaker.js serial.js \
 	      network.js lib.js starter.js worker_bus.js dummy_screen.js

@@ -15,3 +15,6 @@ images/
 *.fixture
 *.fuse_hidden*
 *.DS_Store
+
+node_modules/
+package-lock.json

@@ -3,9 +3,6 @@
 
 /**
  * @constructor
- * @param {CPU} cpu
- * @param {BusConnector} bus
- * @param {FS} filesystem
  */
 function VirtIO(cpu, bus, filesystem)
 {
